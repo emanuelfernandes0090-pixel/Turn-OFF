@@ -1,0 +1,211 @@
+================================================================================
+TURN OFF — EFICIÊNCIA ENERGÉTICA RESIDENCIAL
+DOCUMENTO MESTRE DE CONTEXTO ARQUITETURAL, COMPOSIÇÃO E MIGRAÇÃO INTEGRAL
+================================================================================
+
+AUTORIA E CRÉDITOS DO PROJETO:
+Iniciativa educacional e comunitária desenvolvida pelo GT-02 do 3º Técnico em
+Sistemas de Energia Renovável da EEEP Dom Walfrido Teixeira Vieira.
+Missão: Diagnóstico físico do consumo de energia elétrica, auditoria de contas
+de luz, planos de economia conscientes, conscientização sobre Tarifa Social
+e promoção irrestrita da segurança elétrica residencial (ABNT NBR 5410).
+
+REGRA DE OURO E PRINCÍPIO FUNDAMENTAL:
+"Economizar energia NUNCA deve colocar a família em risco de choque ou incêndio."
+
+DIRETRIZ DE MIGRAÇÃO ABSOLUTA:
+O aplicativo na nova conta deve ser 100% IDÊNTICO ao atual em todas as telas,
+funções, botões, modais, componentes e estilo visual. Não é permitido criar um
+aplicativo novo ou reinventar fluxos. Deve ser uma reprodução e continuidade
+estrita da versão construída.
+
+GERENCIAMENTO DA CHAVE DE API (CONTA GRATUITA):
+- Todas as chamadas de IA (IA Explicativa e Leitura/Auditoria de Faturas) são
+  executadas pelo backend Node.js (server.ts) através da variável de ambiente
+  GEMINI_API_KEY.
+- Para manter a cota desta conta gratuita e não consumir nada da conta com
+  assinatura: a chave copiada de https://aistudio.google.com/app/apikey com esta
+  conta gratuita (emanuelfernandes0085@gmail.com) deve ser inserida nas
+  configurações de ambiente (Settings > Secrets > GEMINI_API_KEY) do novo
+  ambiente. A Google faturará/consumirá as cotas da chave, garantindo que o app
+  continue gratuito e não expire.
+
+--------------------------------------------------------------------------------
+1. ESPECIFICAÇÃO DO ECOSSISTEMA E TECNOLOGIAS
+--------------------------------------------------------------------------------
+- Runtime & Linguagem: TypeScript 5+ em modo estrito (strict: true).
+- Frontend: React 18+ com Vite como empacotador e servidor de desenvolvimento.
+- Backend: Express (server.ts) na porta 3000, unificado com middleware do Vite.
+- SDK de IA: @google/genai oficial, com inicialização segura (lazy initialization)
+  e proxy em rotas /api/*.
+- Estilização: Tailwind CSS moderno com classes utilitárias diretas.
+  Paleta: Neutros profundos (#020617 para Dark Mode e #F8FAFC para Light Mode),
+  destaques em esmeralda (#10B981 / emerald-500) e contrastes auditados WCAG AA.
+- Ícones: Biblioteca lucide-react padronizada em todos os componentes.
+- Tipografia: Plus Jakarta Sans para leitura ergonômica de textos e Space
+  Grotesk para números técnicos, potências e títulos de métricas.
+- Gráficos: Recharts e SVGs reativos com suporte a modo claro/escuro.
+- Arquitetura de Armazenamento: LocalStorage estruturado com exportação e
+  importação de backup em formato JSON íntegro.
+
+--------------------------------------------------------------------------------
+2. ESTRUTURA COMPLETA DE DIRETÓRIOS E ARQUIVOS
+--------------------------------------------------------------------------------
+├── index.html
+├── metadata.json
+├── package.json
+├── server.ts
+├── tsconfig.json
+├── vite.config.ts
+├── .env.example
+├── public/
+│   ├── ads.txt
+│   ├── logo.png
+│   ├── logo.svg
+│   ├── CONTEXTO_MIGRACAO_TURNOFF.txt
+│   └── projeto_completo.zip
+└── src/
+    ├── main.tsx
+    ├── App.tsx
+    ├── index.css
+    ├── types.ts
+    ├── lib/
+    │   ├── energy.ts
+    │   ├── storage.ts
+    │   └── mockData.ts
+    └── components/
+        ├── Header.tsx
+        ├── BottomNav.tsx
+        ├── HomeDashboard.tsx
+        ├── DiagnosisWizard.tsx
+        ├── SavedDiagnosisDetail.tsx
+        ├── BillScanner.tsx
+        ├── WhatIfSimulator.tsx
+        ├── EquipmentPaybackSimulator.tsx
+        ├── SafetyGuide.tsx
+        ├── LearningGuide.tsx
+        ├── TarifaSocialGuide.tsx
+        ├── HistoryView.tsx
+        ├── AIAssistantChat.tsx
+        ├── AccessibilityModal.tsx
+        ├── ShareModal.tsx
+        ├── OnboardingModal.tsx
+        └── AdBanner.tsx
+
+--------------------------------------------------------------------------------
+3. DETALHAMENTO DAS TELAS, COMPONENTES E REGRAS DE NEGÓCIO
+--------------------------------------------------------------------------------
+
+3.1. CABEÇALHO SUPERIOR (Header.tsx)
+- Logo à esquerda com título "Turn OFF" e subtítulo "Eficiência Energética".
+  Clicar na logo redireciona imediatamente para a tela inicial (home).
+- Grupo de 5 botões de ação à direita com altura idêntica (h-9), cantos
+  arredondados (rounded-xl) e ícones verdes (text-emerald-600 dark:text-emerald-400):
+  1. IA Explicativa: Abre o assistente virtual em janela modal flutuante.
+  2. Tutorial: Reabre o guia passo a passo em 12 etapas do sistema.
+  3. Compartilhar: Abre modal com QR Code e link para WhatsApp.
+  4. Configurações: Abre opções de acessibilidade, temas e ouvidoria.
+  5. Alternador de Tema: Alterna instantaneamente entre Modo Claro e Modo Escuro.
+
+3.2. BARRA DE NAVEGAÇÃO INFERIOR MÓVEL (BottomNav.tsx)
+- Barra fixa no rodapé da viewport para celulares e tablets (hidden md:flex).
+- Itens de navegação: Início, Diagnóstico, Escanear, Hábitos, Segurança, Histórico.
+- Destaque visual no item ativo com indicador em esmeralda.
+
+3.3. TELA INICIAL (HomeDashboard.tsx)
+- Cartão Hero com mensagem institucional dos criadores (GT-02 da EEEP Dom
+  Walfrido Teixeira Vieira).
+- Dois botões centrais dispostos lado a lado: "Fazer/Atualizar Diagnóstico"
+  e "Escanear Conta".
+- Cálculo do Índice de Eficiência Geral (0 a 100) calibrado em tempo real com base
+  no inventário de aparelhos, coerência de consumo e segurança elétrica.
+- Alertas de perigo imediato (ex.: disjuntores desarmando, tomadas quentes).
+- Grade com cartões rápidos direcionando para todas as ferramentas do app.
+
+3.4. DIAGNÓSTICO EM 4 ETAPAS (DiagnosisWizard.tsx)
+- Etapa 1: Dados gerais da fatura (consumo faturado em kWh, valor total em R$,
+  bandeira tarifária vigente e quantidade de moradores).
+- Etapa 2: Inventário cômodo por cômodo. Suporta geladeiras com cálculo de Duty
+  Cycle, ar-condicionado com potência térmica em BTUs e tecnologia Inverter vs.
+  Convencional, chuveiros elétricos com seletor Inverno/Verão, lâmpadas LED vs.
+  incandescentes, TVs, computadores e outros eletrodomésticos.
+- Etapa 3: Checklist de segurança segundo a norma ABNT NBR 5410 (condição do
+  quadro de distribuição, aterramento, proteção DR e fiação).
+- Etapa 4: Resultados, gráficos de pizza por aparelho, ranking dos maiores
+  vilões de consumo, planos de metas de economia viáveis e botão para imprimir/salvar.
+
+3.5. AUDITOR E LEITOR DE CONTAS DE LUZ (BillScanner.tsx)
+- Aceita câmera fotográfica ao vivo, envio de imagem (JPG/PNG), upload de PDF ou
+  preenchimento manual.
+- Extração de dados da distribuidora (Enel, CPFL, Cemig, Light, Neoenergia, etc.),
+  consumo faturado em kWh, valor total em R$, data de vencimento e bandeira tarifária.
+- Decomposição tarifária em Tarifa de Energia (TE) e Tarifa de Distribuição (TUSD),
+  além dos tributos ICMS, PIS, COFINS e CIP.
+- Verificação de enquadramento na Tarifa Social de Energia Elétrica.
+
+3.6. SIMULADOR DE HÁBITOS "E SE...?" (WhatIfSimulator.tsx)
+- Ajuste interativo de hábitos cotidianos com cálculo instantâneo da redução
+  projetada em kWh e em Reais por mês e ano:
+  - Redução de minutos de banho no chuveiro;
+  - Troca da chave do chuveiro de Inverno para Verão;
+  - Aumento da temperatura do ar-condicionado para 24°C;
+  - Desligamento de equipamentos em modo standby;
+  - Substituição de lâmpadas convencionais por LED.
+
+3.7. SIMULADOR DE PAYBACK E TROCA DE EQUIPAMENTOS (EquipmentPaybackSimulator.tsx)
+- Avaliação de retorno sobre o investimento ao substituir eletrodomésticos antigos
+  por modelos novos com Selo Procel A e alta eficiência.
+- Cálculo do Payback Simples em meses: o momento exato em que a economia de energia
+  acumulada paga integralmente o custo do aparelho novo.
+- Gráficos comparativos de economia em 1, 3 e 5 anos.
+
+3.8. GUIA DE SEGURANÇA ELÉTRICA NBR 5410 (SafetyGuide.tsx)
+- Instruções detalhadas sobre os 6 sinais críticos de risco residencial.
+- Alertas claros contra o erro grave de trocar disjuntores por outros de maior
+  amperagem sem redimensionar a fiação correspondente.
+- Jogo interativo de Mitos e Verdades para engajamento pedagógico.
+
+3.9. GUIA EDUCATIVO E LEITURA DE MEDIDORES (LearningGuide.tsx)
+- Conceitos físicos simplificados: relação entre Watts, horas de uso e kWh.
+- Guia visual para leitura de medidores analógicos de ponteiros e digitais.
+- Dicas de acompanhamento semanal para evitar surpresas na conta de luz.
+
+3.10. GUIA DA TARIFA SOCIAL (TarifaSocialGuide.tsx)
+- Informações completas sobre a Lei 12.212/2010 e descontos por faixa de consumo:
+  - Até 30 kWh: 65% de desconto;
+  - De 31 a 100 kWh: 40% de desconto;
+  - De 101 a 220 kWh: 10% de desconto;
+  - Acima de 220 kWh: sem desconto.
+- Regras de gratuidade para famílias indígenas e quilombolas (até 50 kWh).
+- Requisitos do CadÚnico, BPC/LOAS e documentos para requerimento.
+
+3.11. HISTÓRICO, GRÁFICOS E BACKUP (HistoryView.tsx)
+- Listagem cronológica de diagnósticos salvos e contas de luz auditadas.
+- Botão "Ver Detalhes" para inspeção detalhada de cada diagnóstico.
+- Gráficos históricos com alternador de exibição em kWh ou em Reais (R$).
+- Exportação e importação de arquivo de backup JSON criptograficamente seguro.
+
+3.12. IA EXPLICATIVA FLUTUANTE (AIAssistantChat.tsx)
+- Chat interativo com o assistente pedagógico especializado em energia elétrica.
+- Respostas contextualizadas com perguntas frequentes pré-definidas em um clique.
+
+3.13. ACESSIBILIDADE, CONFIGURAÇÕES E OUVIDORIA (AccessibilityModal.tsx)
+- Controle de escala de fontes (de 85% a 150%).
+- Ativação do modo de Linguagem Simplificada para termos técnicos.
+- Link direto para a Ouvidoria oficial da iniciativa no Google Forms.
+
+3.14. COMPARTILHAMENTO (ShareModal.tsx)
+- Geração instantânea de QR Code na tela para leitura por outros celulares.
+- Compartilhamento via WhatsApp com mensagem explicativa formatada e link direto.
+
+3.15. TUTORIAL GUIADO (OnboardingModal.tsx)
+- Passo a passo interativo em 12 etapas cobrindo todas as áreas do aplicativo.
+
+3.16. PUBLICIDADE SEGURA (AdBanner.tsx e public/ads.txt)
+- Componente localizado no final da página, antes do rodapé.
+- Permanece completamente invisível e inativo até que credenciais reais sejam configuradas.
+- Arquivo ads.txt padrão posicionado em /public/ads.txt.
+
+================================================================================
+FIM DO DOCUMENTO DE CONTEXTO E ESPECIFICAÇÃO
+================================================================================
